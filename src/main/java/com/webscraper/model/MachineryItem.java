@@ -1,11 +1,8 @@
 package com.webscraper.model;
 
-/**
- * Model class representing an agricultural machinery item.
- */
 public class MachineryItem {
     private String model;
-    private String contractType; // rent or sale
+    private String contractType;
     private String make;
     private String year;
     private String workedHours;
@@ -13,7 +10,7 @@ public class MachineryItem {
     private String price;
     private String photoUrl;
     private String sourceWebsite;
-    private String status; // Active, Sold, Finalized, Inactive, Unknown
+    private String status;
 
     public MachineryItem() {
     }

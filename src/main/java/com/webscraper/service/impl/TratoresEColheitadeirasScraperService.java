@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Implementation of WebScraperService for the TratoresEColheitadeiras website.
- */
 @Service
 public class TratoresEColheitadeirasScraperService implements WebScraperService {
     
@@ -39,17 +36,14 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
             MachineryItem item = new MachineryItem();
             item.setSourceWebsite(WEBSITE_NAME);
             
-            // Check if the ad is expired or sold
             boolean isExpired = doc.select(".expired-notice, .sold-notice, .unavailable-notice").size() > 0;
             
-            // Check for specific message "Esse veículo já foi vendido"
             Elements soldMessages = doc.getElementsContainingText("Esse veículo já foi vendido");
             if (!soldMessages.isEmpty()) {
                 logger.info("Vehicle has been sold: {}", url);
                 item.setStatus("Sold");
                 extractDataFromUrl(url, item);
                 
-                // Try to extract image from similar vehicles section
                 Elements similarVehicles = doc.select(".similar-vehicles img, .related-vehicles img");
                 if (!similarVehicles.isEmpty()) {
                     String imgSrc = similarVehicles.first().attr("src");
@@ -70,18 +64,15 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
                 item.setStatus("Active");
             }
             
-            // Extract model and make from the URL and title
             Element titleElement = doc.selectFirst("h1.title-vehicle, .vehicle-title");
             if (titleElement != null) {
                 String fullTitle = titleElement.text().trim();
                 item.setModel(fullTitle);
                 
-                // Extract make from title or URL
                 String[] titleParts = fullTitle.split(" ");
                 if (titleParts.length > 0) {
-                    item.setMake(titleParts[0]); // First word is typically the brand
+                    item.setMake(titleParts[0]);
                 } else {
-                    // Try to extract from URL
                     Pattern makePattern = Pattern.compile("/([a-zA-Z]+)/[0-9]+$");
                     Matcher makeMatcher = makePattern.matcher(url);
                     if (makeMatcher.find()) {
@@ -89,11 +80,10 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
                     }
                 }
             } else {
-                // Extract from URL parts
+                logger.info("Could not find title element for URL: {}", url);
                 extractDataFromUrl(url, item);
             }
             
-            // Contract type - usually indicated somewhere on the page
             Element contractElement = doc.selectFirst(".vehicle-info-item:contains(Tipo de anúncio)");
             if (contractElement != null) {
                 String contractText = contractElement.text().toLowerCase();
@@ -102,23 +92,21 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
                 } else if (contractText.contains("aluguel")) {
                     item.setContractType("Rent");
                 } else {
-                    item.setContractType("Sale"); // Default
+                    item.setContractType("Sale");
                 }
             } else {
-                item.setContractType("Sale"); // Default
+                item.setContractType("Sale");
+                logger.info("Could not find contract type element for URL: {}", url);
             }
             
-            // Year - extract from URL or page content
             Element yearElement = doc.selectFirst(".vehicle-info-item:contains(Ano), .vehicle-year");
             if (yearElement != null) {
                 String yearText = yearElement.text().replaceAll("[^0-9]", "");
                 if (!yearText.isEmpty()) {
                     item.setYear(yearText);
                 }
-            }
-            
-            // If year is still null, try to extract from URL
-            if (item.getYear() == null) {
+            } else {
+                logger.info("Could not find year element for URL: {}", url);
                 Pattern yearPattern = Pattern.compile("/(20\\d{2})/");
                 Matcher yearMatcher = yearPattern.matcher(url);
                 if (yearMatcher.find()) {
@@ -126,42 +114,43 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
                 }
             }
             
-            // Worked hours
             Element hoursElement = doc.selectFirst(".vehicle-info-item:contains(Horas), .vehicle-hours");
             if (hoursElement != null) {
                 String hoursText = hoursElement.text().replaceAll("[^0-9]", "");
                 if (!hoursText.isEmpty()) {
                     item.setWorkedHours(hoursText);
                 }
+            } else {
+                logger.info("Could not find worked hours element for URL: {}", url);
             }
             
-            // City/Location - extract from URL
             Pattern locationPattern = Pattern.compile("/([a-zA-Z]+)/([a-zA-Z]{2})/");
             Matcher locationMatcher = locationPattern.matcher(url);
             if (locationMatcher.find()) {
                 item.setCity(locationMatcher.group(1) + ", " + locationMatcher.group(2).toUpperCase());
+            } else {
+                logger.info("Could not extract city/location from URL: {}", url);
             }
             
-            // Price
             Element priceElement = doc.selectFirst(".vehicle-price, .price");
             if (priceElement != null) {
                 item.setPrice(priceElement.text().trim());
+            } else {
+                logger.info("Could not find price element for URL: {}", url);
             }
             
-            // Photo URL - try multiple methods
             extractPhotoUrl(doc, item);
+            if (item.getPhotoUrl() == null) {
+                logger.info("Could not find photo URL for URL: {}", url);
+            }
             
-            // Fix invalid photo URL
             if (item.getPhotoUrl() != null && item.getPhotoUrl().equals("{6}")) {
-                // Try to find another image
+                logger.info("Found invalid photo URL '{6}' for URL: {}", url);
+                item.setPhotoUrl(null);
+                
                 Elements allImages = doc.select("img[src*=veiculos]");
                 if (!allImages.isEmpty()) {
                     item.setPhotoUrl(allImages.first().attr("src"));
-                } else {
-                    // Provide a default image based on the model
-                    if (url.contains("produttiva-1250")) {
-                        item.setPhotoUrl("https://www.tratoresecolheitadeiras.com.br/img/no-image.jpg");
-                    }
                 }
             }
             
@@ -170,10 +159,9 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
         } catch (IOException e) {
             logger.error("Error scraping TratoresEColheitadeiras URL: {}", url, e);
             
-            // If we can't access the page, try to extract data from the URL
             MachineryItem item = new MachineryItem();
             item.setSourceWebsite(WEBSITE_NAME);
-            item.setStatus("Unknown");
+            item.setStatus("Error");
             extractDataFromUrl(url, item);
             items.add(item);
         }
@@ -181,11 +169,7 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
         return items;
     }
     
-    /**
-     * Extracts photo URL using multiple methods.
-     */
     private void extractPhotoUrl(Document doc, MachineryItem item) {
-        // Method 1: Direct image selector
         Element photoElement = doc.selectFirst(".vehicle-image img, .main-image img, .carousel-item img, .gallery-image img");
         if (photoElement != null) {
             String photoUrl = photoElement.attr("src");
@@ -198,7 +182,6 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
             }
         }
         
-        // Method 2: Look for image in meta tags
         Element metaImage = doc.selectFirst("meta[property=og:image]");
         if (metaImage != null) {
             String content = metaImage.attr("content");
@@ -208,7 +191,6 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
             }
         }
         
-        // Method 3: Look for any image in the main content area
         Elements contentImages = doc.select(".vehicle-gallery img, .vehicle-photos img");
         if (!contentImages.isEmpty()) {
             Element firstImage = contentImages.first();
@@ -219,7 +201,6 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
             }
         }
         
-        // Method 4: Look for background images in style attributes
         Elements elementsWithBgImage = doc.select("[style*=background-image]");
         if (!elementsWithBgImage.isEmpty()) {
             String style = elementsWithBgImage.first().attr("style");
@@ -231,11 +212,7 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
         }
     }
     
-    /**
-     * Extracts machinery data from the URL when the page can't be accessed.
-     */
     private void extractDataFromUrl(String url, MachineryItem item) {
-        // Extract model and make from URL parts
         String[] urlParts = url.split("/");
         for (int i = 0; i < urlParts.length; i++) {
             if (urlParts[i].equalsIgnoreCase("plataforma-colheitadeira") && i+2 < urlParts.length) {
@@ -245,31 +222,19 @@ public class TratoresEColheitadeirasScraperService implements WebScraperService 
             }
         }
         
-        // Extract year from URL
         Pattern yearPattern = Pattern.compile("/(20\\d{2})/");
         Matcher yearMatcher = yearPattern.matcher(url);
         if (yearMatcher.find()) {
             item.setYear(yearMatcher.group(1));
         }
         
-        // Extract city and state from URL
         Pattern locationPattern = Pattern.compile("/([a-zA-Z]+)/([a-zA-Z]{2})/");
         Matcher locationMatcher = locationPattern.matcher(url);
         if (locationMatcher.find()) {
             item.setCity(locationMatcher.group(1) + ", " + locationMatcher.group(2).toUpperCase());
         }
         
-        // Set default contract type
         item.setContractType("Sale");
-        
-        // Add specific information based on URL
-        if (url.contains("flexer-xs-45")) {
-            item.setPrice("(a consultar)");
-            item.setPhotoUrl("https://images.caminhoesecarretas.com.br/cliente_003330/veiculos/1028839_whatsapp%20image%202022-12-21%20at%2018.00.11%20(1)_mini.jpeg");
-        } else if (url.contains("produttiva-1250")) {
-            item.setPrice("R$ 320.000,00");
-            item.setPhotoUrl("https://www.tratoresecolheitadeiras.com.br/img/no-image.jpg");
-        }
     }
     
     @Override

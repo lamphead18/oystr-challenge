@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Implementation of WebScraperService for the Agrofy website.
- */
 @Service
 public class AgrofyScraperService implements WebScraperService {
     
@@ -39,30 +36,19 @@ public class AgrofyScraperService implements WebScraperService {
             MachineryItem item = new MachineryItem();
             item.setSourceWebsite(WEBSITE_NAME);
             
-            // Check if the ad is expired or sold
             boolean isExpired = doc.select(".expired-notice, .sold-notice, .unavailable-notice").size() > 0;
             
-            // Check for specific message "A publicação está finalizada"
             Elements finalizedMessages = doc.getElementsContainingText("A publicação está finalizada");
             if (!finalizedMessages.isEmpty() || isExpired) {
                 logger.info("Ad is finalized or expired: {}", url);
                 item.setStatus("Finalized");
                 extractDataFromUrl(url, item);
-                
-                // Try to extract image from similar products section
-                Elements similarProducts = doc.select(".similar-products img, .related-products img");
-                if (!similarProducts.isEmpty()) {
-                    String imgSrc = similarProducts.first().attr("src");
-                    if (!imgSrc.isEmpty()) {
-                        item.setPhotoUrl(imgSrc);
-                    }
-                }
-                
                 items.add(item);
                 return items;
+            } else {
+                item.setStatus("Active");
             }
             
-            // Extract model and make from title
             Element titleElement = doc.selectFirst("h1.title, h1.product-title, .product-name");
             if (titleElement != null) {
                 String fullTitle = titleElement.text().trim();
@@ -70,67 +56,61 @@ public class AgrofyScraperService implements WebScraperService {
                 
                 String[] titleParts = fullTitle.split(" ");
                 if (titleParts.length > 0) {
-                    item.setMake(titleParts[0]); // First word is typically the brand
+                    item.setMake(titleParts[0]);
                 }
+            } else {
+                logger.info("Could not find title element for URL: {}", url);
             }
             
-            // Contract type - Agrofy typically lists items for sale
             item.setContractType("Sale");
-            item.setStatus("Active");
             
-            // Year - look for year in specifications
             Element yearElement = doc.selectFirst(".specs-item:contains(Año), .specs-item:contains(Ano), .product-year, .product-detail:contains(Ano)");
             if (yearElement != null) {
                 String yearText = yearElement.text().replaceAll("[^0-9]", "");
                 if (!yearText.isEmpty()) {
                     item.setYear(yearText);
-                } else {
-                    // Try to extract from URL or title
-                    if (url.matches(".*\\d{4}.*")) {
-                        String[] parts = url.split("[^0-9]");
-                        for (String part : parts) {
-                            if (part.length() == 4 && part.matches("\\d{4}")) {
-                                item.setYear(part);
-                                break;
-                            }
-                        }
-                    }
                 }
+            } else {
+                logger.info("Could not find year element for URL: {}", url);
             }
             
-            // Worked hours
             Element hoursElement = doc.selectFirst(".specs-item:contains(Horas), .product-hours, .product-detail:contains(Horas)");
             if (hoursElement != null) {
                 String hoursText = hoursElement.text().replaceAll("[^0-9]", "");
                 if (!hoursText.isEmpty()) {
                     item.setWorkedHours(hoursText);
                 }
+            } else {
+                logger.info("Could not find worked hours element for URL: {}", url);
             }
             
-            // City/Location
             Element locationElement = doc.selectFirst(".location, .product-location, .seller-location");
             if (locationElement != null) {
                 item.setCity(locationElement.text().trim());
+            } else {
+                logger.info("Could not find location element for URL: {}", url);
             }
             
-            // Price
             Element priceElement = doc.selectFirst(".price-value, .product-price, .price");
             if (priceElement != null) {
                 item.setPrice(priceElement.text().trim());
+            } else {
+                logger.info("Could not find price element for URL: {}", url);
             }
             
-            // Photo URL - try multiple selectors and methods
             extractPhotoUrl(doc, item);
+            if (item.getPhotoUrl() == null) {
+                logger.info("Could not find photo URL for URL: {}", url);
+            }
             
             items.add(item);
             logger.info("Scraped item from Agrofy: {}", item);
         } catch (IOException e) {
             logger.error("Error scraping Agrofy URL: {}", url, e);
             
-            // If we can't access the page, try to extract data from the URL
             MachineryItem item = new MachineryItem();
             item.setSourceWebsite(WEBSITE_NAME);
-            item.setStatus("Unknown");
+            item.setStatus("Error");
             extractDataFromUrl(url, item);
             items.add(item);
         }
@@ -138,9 +118,6 @@ public class AgrofyScraperService implements WebScraperService {
         return items;
     }
     
-    /**
-     * Extracts photo URL using multiple methods.
-     */
     private void extractPhotoUrl(Document doc, MachineryItem item) {
         // Method 1: Direct image selector
         Element photoElement = doc.selectFirst(".product-image img, .main-image img, .carousel-item img, .gallery-image img");
@@ -155,7 +132,6 @@ public class AgrofyScraperService implements WebScraperService {
             }
         }
         
-        // Method 2: Look for image in meta tags
         Element metaImage = doc.selectFirst("meta[property=og:image]");
         if (metaImage != null) {
             String content = metaImage.attr("content");
@@ -165,7 +141,6 @@ public class AgrofyScraperService implements WebScraperService {
             }
         }
         
-        // Method 3: Look for any image in the main content area
         Elements contentImages = doc.select(".product-content img, .product-gallery img");
         if (!contentImages.isEmpty()) {
             Element firstImage = contentImages.first();
@@ -176,7 +151,6 @@ public class AgrofyScraperService implements WebScraperService {
             }
         }
         
-        // Method 4: Look for background images in style attributes
         Elements elementsWithBgImage = doc.select("[style*=background-image]");
         if (!elementsWithBgImage.isEmpty()) {
             String style = elementsWithBgImage.first().attr("style");
@@ -188,11 +162,7 @@ public class AgrofyScraperService implements WebScraperService {
         }
     }
     
-    /**
-     * Extracts machinery data from the URL when the page can't be accessed.
-     */
     private void extractDataFromUrl(String url, MachineryItem item) {
-        // Extract model and make from URL
         Pattern modelPattern = Pattern.compile("/trator-([a-zA-Z-]+)-([a-zA-Z0-9-]+)");
         Matcher modelMatcher = modelPattern.matcher(url);
         
@@ -203,31 +173,8 @@ public class AgrofyScraperService implements WebScraperService {
             item.setModel("Trator " + make + " " + model);
             item.setMake(make.toUpperCase());
             item.setContractType("Sale");
-            
-            // Try to extract year from URL
-            Pattern yearPattern = Pattern.compile("(20\\d{2})");
-            Matcher yearMatcher = yearPattern.matcher(url);
-            if (yearMatcher.find()) {
-                item.setYear(yearMatcher.group(1));
-            }
-            
-            // Extract ID from URL if available
-            Pattern idPattern = Pattern.compile("-(\\d+)\\.html");
-            Matcher idMatcher = idPattern.matcher(url);
-            if (idMatcher.find()) {
-                String id = idMatcher.group(1);
-                if (model.equals("7230j")) {
-                    item.setWorkedHours("3500");
-                    item.setCity("São Paulo, SP");
-                    item.setPrice("R$ 450.000,00");
-                    item.setPhotoUrl("https://http2.mlstatic.com/D_NQ_NP_2X_686081-MLB53056973599_122022-F.webp");
-                } else if (model.equals("puma-215")) {
-                    item.setWorkedHours("4200");
-                    item.setCity("Ribeirão Preto, SP");
-                    item.setPrice("R$ 380.000,00");
-                    item.setPhotoUrl("https://http2.mlstatic.com/D_NQ_NP_2X_686081-MLB53056973599_122022-F.webp");
-                }
-            }
+        } else {
+            logger.info("Could not extract model/make from URL: {}", url);
         }
     }
     

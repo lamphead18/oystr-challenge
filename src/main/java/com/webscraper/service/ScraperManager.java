@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Manager class that coordinates the scraping of multiple websites.
- */
 @Service
 public class ScraperManager {
     
@@ -26,12 +23,6 @@ public class ScraperManager {
         this.scraperServices = scraperServices;
     }
     
-    /**
-     * Scrapes all websites using the provided URLs.
-     * 
-     * @param urlsMap Map of website names to lists of URLs to scrape
-     * @return List of all machinery items found
-     */
     public List<MachineryItem> scrapeAllWebsites(Map<String, List<String>> urlsMap) {
         List<MachineryItem> allItems = new ArrayList<>();
         
@@ -55,11 +46,6 @@ public class ScraperManager {
         return allItems;
     }
     
-    /**
-     * Gets a map of all scrapers by their website names.
-     * 
-     * @return Map of website names to scraper services
-     */
     public Map<String, WebScraperService> getScrapersByWebsite() {
         Map<String, WebScraperService> scraperMap = new HashMap<>();
         
