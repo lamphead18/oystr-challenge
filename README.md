@@ -26,36 +26,6 @@ This application fetches data from three agricultural machinery websites and col
 - Java 11 or higher
 - Maven
 
-## Project Structure
-
-```
-src/
-├── main/
-│   └── java/
-│       └── com/
-│           └── webscraper/
-│               ├── config/
-│               │   └── AppConfig.java
-│               ├── model/
-│               │   └── MachineryItem.java
-│               ├── service/
-│               │   ├── impl/
-│               │   │   ├── AgrofyScraperService.java
-│               │   │   ├── TratoresEColheitadeirasScraperService.java
-│               │   │   └── MercadoMaquinasScraperService.java
-│               │   ├── ScraperManager.java
-│               │   └── WebScraperService.java
-│               ├── util/
-│               │   └── DataExporter.java
-│               └── Main.java
-└── test/
-    └── java/
-        └── com/
-            └── webscraper/
-                └── service/
-                    └── AgrofyScraperServiceTest.java
-```
-
 ## How to Build
 
 ```bash
@@ -70,4 +40,4 @@ java -jar target/agricultural-machinery-scraper-1.0-SNAPSHOT-jar-with-dependenci
 
 ## Output
 
-The application will create a CSV file in the `output` directory with the scraped data. The filename includes a timestamp to avoid overwriting previous results.
+The application will create a JSON file in the `output` directory with the scraped data. The filename includes a timestamp to avoid overwriting previous results.
