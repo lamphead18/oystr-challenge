@@ -13,13 +13,14 @@ public class MachineryItem {
     private String price;
     private String photoUrl;
     private String sourceWebsite;
+    private String status; // Active, Sold, Finalized, Inactive, Unknown
 
     public MachineryItem() {
     }
 
     public MachineryItem(String model, String contractType, String make, String year, 
                          String workedHours, String city, String price, String photoUrl, 
-                         String sourceWebsite) {
+                         String sourceWebsite, String status) {
         this.model = model;
         this.contractType = contractType;
         this.make = make;
@@ -29,6 +30,7 @@ public class MachineryItem {
         this.price = price;
         this.photoUrl = photoUrl;
         this.sourceWebsite = sourceWebsite;
+        this.status = status;
     }
 
     public String getModel() {
@@ -102,6 +104,14 @@ public class MachineryItem {
     public void setSourceWebsite(String sourceWebsite) {
         this.sourceWebsite = sourceWebsite;
     }
+    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
@@ -115,6 +125,7 @@ public class MachineryItem {
                 ", price='" + price + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 ", sourceWebsite='" + sourceWebsite + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

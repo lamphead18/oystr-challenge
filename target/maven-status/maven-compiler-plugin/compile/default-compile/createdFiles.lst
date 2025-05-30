@@ -1,13 +1,10 @@
-com/webscraper/service/impl/Website1ScraperService.class
 com/webscraper/service/impl/MercadoMaquinasScraperService.class
-com/webscraper/service/impl/TratoresEColheitadeirasScraperService.class
-com/webscraper/util/JsonExporter.class
-com/webscraper/service/impl/Website3ScraperService.class
 com/webscraper/model/MachineryItem.class
 com/webscraper/Main.class
 com/webscraper/service/WebScraperService.class
 com/webscraper/util/DataExporter.class
-com/webscraper/service/impl/Website2ScraperService.class
 com/webscraper/service/ScraperManager.class
+com/webscraper/service/impl/TratoresEColheitadeirasScraperService.class
+com/webscraper/util/JsonExporter.class
 com/webscraper/service/impl/AgrofyScraperService.class
 com/webscraper/config/AppConfig.class
