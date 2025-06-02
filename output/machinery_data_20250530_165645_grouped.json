@@ -1,0 +1,74 @@
+{
+  "totalItems" : 6,
+  "websites" : {
+    "TratoresEColheitadeiras" : [ {
+      "model" : "flexer-xs-45",
+      "contractType" : "Sale",
+      "make" : "GTS",
+      "year" : "2023",
+      "workedHours" : null,
+      "city" : "uberlandia, MG",
+      "price" : "(a consultar)",
+      "photoUrl" : "https://images.caminhoesecarretas.com.br/cliente_003330/veiculos/1028839_whatsapp%20image%202022-12-21%20at%2018.00.11%20(1)_mini.jpeg",
+      "sourceWebsite" : "TratoresEColheitadeiras",
+      "status" : "Active"
+    }, {
+      "model" : "produttiva-1250",
+      "contractType" : "Sale",
+      "make" : "GTS",
+      "year" : "2022",
+      "workedHours" : null,
+      "city" : "uberlandia, MG",
+      "price" : null,
+      "photoUrl" : null,
+      "sourceWebsite" : "TratoresEColheitadeiras",
+      "status" : "Sold"
+    } ],
+    "Agrofy" : [ {
+      "model" : "Trator john deere 7230j oferta",
+      "contractType" : "Sale",
+      "make" : "JOHN DEERE",
+      "year" : null,
+      "workedHours" : null,
+      "city" : null,
+      "price" : null,
+      "photoUrl" : null,
+      "sourceWebsite" : "Agrofy",
+      "status" : "Finalized"
+    }, {
+      "model" : "Trator case puma 215 193793",
+      "contractType" : "Sale",
+      "make" : "CASE PUMA",
+      "year" : null,
+      "workedHours" : null,
+      "city" : null,
+      "price" : null,
+      "photoUrl" : null,
+      "sourceWebsite" : "Agrofy",
+      "status" : "Finalized"
+    } ],
+    "MercadoMaquinas" : [ {
+      "model" : "retro escavadeira caterpillar 416e",
+      "contractType" : "Sale",
+      "make" : "CATERPILLAR",
+      "year" : "2015",
+      "workedHours" : null,
+      "city" : "carlopolis, PR",
+      "price" : null,
+      "photoUrl" : null,
+      "sourceWebsite" : "MercadoMaquinas",
+      "status" : "Error"
+    }, {
+      "model" : "mini escavadeira bobcat e27z",
+      "contractType" : "Sale",
+      "make" : "BOBCAT",
+      "year" : "2019",
+      "workedHours" : null,
+      "city" : "sete lagoas, MG",
+      "price" : null,
+      "photoUrl" : null,
+      "sourceWebsite" : "MercadoMaquinas",
+      "status" : "Error"
+    } ]
+  }
+}

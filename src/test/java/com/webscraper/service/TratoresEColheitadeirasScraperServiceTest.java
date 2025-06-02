@@ -1,7 +1,7 @@
 package com.webscraper.service;
 
 import com.webscraper.model.MachineryItem;
-import com.webscraper.service.impl.AgrofyScraperService;
+import com.webscraper.service.impl.TratoresEColheitadeirasScraperService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,15 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-public class AgrofyScraperServiceTest {
+public class TratoresEColheitadeirasScraperServiceTest {
 
     @InjectMocks
-    private AgrofyScraperService scraperService;
+    private TratoresEColheitadeirasScraperService scraperService;
 
     @Test
     public void testGetWebsiteName() {
         String websiteName = scraperService.getWebsiteName();
         
-        assertEquals("Agrofy", websiteName);
+        assertEquals("TratoresEColheitadeiras", websiteName);
     }
 }

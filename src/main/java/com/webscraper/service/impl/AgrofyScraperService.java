@@ -119,7 +119,6 @@ public class AgrofyScraperService implements WebScraperService {
     }
     
     private void extractPhotoUrl(Document doc, MachineryItem item) {
-        // Method 1: Direct image selector
         Element photoElement = doc.selectFirst(".product-image img, .main-image img, .carousel-item img, .gallery-image img");
         if (photoElement != null) {
             String photoUrl = photoElement.attr("src");
