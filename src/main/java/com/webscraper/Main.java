@@ -16,32 +16,32 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-    
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     
     public static void main(String[] args) {
         logger.info("Starting Agricultural Machinery Web Scraper");
         
-        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class)) {
+        try (AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext(AppConfig.class)) {
             ScraperManager scraperManager = context.getBean(ScraperManager.class);
             JsonExporter jsonExporter = context.getBean(JsonExporter.class);
             
             Map<String, List<String>> urlsMap = new HashMap<>();
-            
+
             List<String> agrofyUrls = new ArrayList<>();
             agrofyUrls.add("https://www.agrofy.com.br/trator-john-deere-7230j-oferta.html");
             agrofyUrls.add("https://www.agrofy.com.br/trator-case-puma-215-193793.html");
             urlsMap.put("Agrofy", agrofyUrls);
             
-            List<String> tratoresUrls = new ArrayList<>();
-            tratoresUrls.add("https://www.tratoresecolheitadeiras.com.br/veiculo/uberlandia/mg/plataforma-colheitadeira/gts/flexer-xs-45/2023/45-pes/draper/triamaq-tratores/1028839");
-            tratoresUrls.add("https://www.tratoresecolheitadeiras.com.br/veiculo/uberlandia/mg/plataforma-colheitadeira/gts/produttiva-1250/2022/caracol/12-linhas/triamaq-tratores/994257");
-            urlsMap.put("TratoresEColheitadeiras", tratoresUrls);
+            List<String> tractorsUrls = new ArrayList<>();
+            tractorsUrls.add("https://www.tratoresecolheitadeiras.com.br/veiculo/uberlandia/mg/plataforma-colheitadeira/gts/flexer-xs-45/2023/45-pes/draper/triamaq-tratores/1028839");
+            tractorsUrls.add("https://www.tratoresecolheitadeiras.com.br/veiculo/uberlandia/mg/plataforma-colheitadeira/gts/produttiva-1250/2022/caracol/12-linhas/triamaq-tratores/994257");
+            urlsMap.put("TratoresEColheitadeiras", tractorsUrls);
             
-            List<String> mercadoUrls = new ArrayList<>();
-            mercadoUrls.add("https://www.mercadomaquinas.com.br/anuncio/236624-retro-escavadeira-caterpillar-416e-2015-carlopolis-pr");
-            mercadoUrls.add("https://www.mercadomaquinas.com.br/anuncio/236623-mini-escavadeira-bobcat-e27z-2019-sete-lagoas-mg");
-            urlsMap.put("MercadoMaquinas", mercadoUrls);
+            List<String> machineMarketUrls = new ArrayList<>();
+            machineMarketUrls.add("https://www.mercadomaquinas.com.br/anuncio/236624-retro-escavadeira-caterpillar-416e-2015-carlopolis-pr");
+            machineMarketUrls.add("https://www.mercadomaquinas.com.br/anuncio/236623-mini-escavadeira-bobcat-e27z-2019-sete-lagoas-mg");
+            urlsMap.put("MercadoMaquinas", machineMarketUrls);
             
             logger.info("Starting to scrape all websites");
             List<MachineryItem> allItems = scraperManager.scrapeAllWebsites(urlsMap);

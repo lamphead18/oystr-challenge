@@ -3,6 +3,8 @@ com/webscraper/model/MachineryItem.class
 com/webscraper/Main.class
 com/webscraper/service/WebScraperService.class
 com/webscraper/util/DataExporter.class
+com/webscraper/service/impl/TractorsAndHarvestersScraperService.class
+com/webscraper/service/impl/MachineMarketScraperService.class
 com/webscraper/service/ScraperManager.class
 com/webscraper/service/impl/TratoresEColheitadeirasScraperService.class
 com/webscraper/util/JsonExporter.class

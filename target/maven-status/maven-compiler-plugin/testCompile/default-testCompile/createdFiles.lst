@@ -1,3 +1,5 @@
 com/webscraper/service/MercadoMaquinasScraperServiceTest.class
-com/webscraper/service/TratoresEColheitadeirasScraperServiceTest.class
 com/webscraper/service/AgrofyScraperServiceTest.class
+com/webscraper/service/MachineMarketScraperServiceTest.class
+com/webscraper/service/TratoresEColheitadeirasScraperServiceTest.class
+com/webscraper/service/TractorsAndHarvestersScraperServiceTest.class

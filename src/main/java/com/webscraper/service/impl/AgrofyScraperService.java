@@ -21,6 +21,8 @@ public class AgrofyScraperService implements WebScraperService {
     
     private static final Logger logger = LoggerFactory.getLogger(AgrofyScraperService.class);
     private static final String WEBSITE_NAME = "Agrofy";
+    private static final String BASE_URL = "https://www.agrofy.com.br";
+
     
     @Override
     public List<MachineryItem> scrapePage(String url) {
@@ -36,7 +38,7 @@ public class AgrofyScraperService implements WebScraperService {
             MachineryItem item = new MachineryItem();
             item.setSourceWebsite(WEBSITE_NAME);
             
-            boolean isExpired = doc.select(".expired-notice, .sold-notice, .unavailable-notice").size() > 0;
+            boolean isExpired = !doc.select(".expired-notice, .sold-notice, .unavailable-notice").isEmpty();
             
             Elements finalizedMessages = doc.getElementsContainingText("A publicação está finalizada");
             if (!finalizedMessages.isEmpty() || isExpired) {
@@ -98,7 +100,7 @@ public class AgrofyScraperService implements WebScraperService {
                 logger.info("Could not find price element for URL: {}", url);
             }
             
-            extractPhotoUrl(doc, item);
+            extractPhotoUrl(doc, url, item);
             if (item.getPhotoUrl() == null) {
                 logger.info("Could not find photo URL for URL: {}", url);
             }
@@ -117,15 +119,18 @@ public class AgrofyScraperService implements WebScraperService {
         
         return items;
     }
-    
-    private void extractPhotoUrl(Document doc, MachineryItem item) {
-        Element photoElement = doc.selectFirst(".product-image img, .main-image img, .carousel-item img, .gallery-image img");
+
+    private void extractPhotoUrl(Document doc, String url, MachineryItem item) {
+        Element photoElement = doc.selectFirst(".ad-image img, .main-image img, .carousel-item img, .gallery-image img");
         if (photoElement != null) {
             String photoUrl = photoElement.attr("src");
             if (photoUrl.isEmpty()) {
                 photoUrl = photoElement.attr("data-src");
             }
             if (!photoUrl.isEmpty()) {
+                if (!photoUrl.startsWith("http")) {
+                    photoUrl = BASE_URL + photoUrl;
+                }
                 item.setPhotoUrl(photoUrl);
                 return;
             }
@@ -169,7 +174,7 @@ public class AgrofyScraperService implements WebScraperService {
             String make = modelMatcher.group(1).replace("-", " ");
             String model = modelMatcher.group(2).replace("-", " ");
             
-            item.setModel("Trator " + make + " " + model);
+            item.setModel("Tractor " + make + " " + model);
             item.setMake(make.toUpperCase());
             item.setContractType("Sale");
         } else {

@@ -1,10 +1,12 @@
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/Main.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/ScraperManager.java
+/home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/impl/MachineMarketScraperService.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/impl/AgrofyScraperService.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/util/JsonExporter.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/impl/TratoresEColheitadeirasScraperService.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/model/MachineryItem.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/util/DataExporter.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/impl/MercadoMaquinasScraperService.java
+/home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/impl/TractorsAndHarvestersScraperService.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/service/WebScraperService.java
 /home/gabriel/Documentos/agricultural-machinery-scraper/src/main/java/com/webscraper/config/AppConfig.java
